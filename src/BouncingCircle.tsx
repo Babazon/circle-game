@@ -6,14 +6,12 @@ import Animated, {
   useDerivedValue,
   useSharedValue
 } from 'react-native-reanimated';
-import { INITIAL_SIZE, SIZE_REDUCTION, SPEED_INCREMENT, CLICK_COUNT } from './constants';
+import { INITIAL_SIZE, SIZE_REDUCTION, SPEED_INCREMENT } from './constants';
 
 const { width, height } = Dimensions.get('window');
 
 
-
 interface BouncingCircleProps {
-  clickCount: number;
   setClickCount: React.Dispatch<React.SetStateAction<number>>;
   isGameActive: SharedValue<boolean>;
   speed: SharedValue<number>;
@@ -21,7 +19,7 @@ interface BouncingCircleProps {
   stopGame: () => void;
 }
 
-const BouncingCircle: React.FC<BouncingCircleProps> = ({ clickCount, setClickCount, isGameActive, speed, size, stopGame }) => {
+const BouncingCircle: React.FC<BouncingCircleProps> = ({ setClickCount, isGameActive, speed, size, stopGame }) => {
 
 
   const positionX = useSharedValue(width / 2 - INITIAL_SIZE / 2);
@@ -49,11 +47,9 @@ const BouncingCircle: React.FC<BouncingCircleProps> = ({ clickCount, setClickCou
 
     if (!isGameActive.value) return;
 
-    // Move the circle
     positionX.value += directionX.value * speed.value;
     positionY.value += directionY.value * speed.value;
 
-    // If the circle reaches an edge, reverse the appropriate direction
     if (positionX.value > width - size.value - 1 || positionX.value < 1) {
       directionX.value *= -1;
     }

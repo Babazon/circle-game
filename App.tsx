@@ -1,5 +1,6 @@
 // App.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import Confetti from 'react-native-confetti';
 import { useSharedValue } from 'react-native-reanimated';
 import BouncingCircle from './src/BouncingCircle';
 import GameOver from './src/components/GameOver';
@@ -18,9 +19,17 @@ export default function App() {
   const [startTime, setStartTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
 
+  const confettiRef = useRef(null);
+
+
   const stopGame = () => {
     isGameActive.value = false;
     setElapsedTime(Date.now() - startTime);
+    if (confettiRef.current) {
+      // current is typed as never, so we have to mute typescript here
+      // @ts-ignore
+      confettiRef.current.startConfetti();
+    }
   }
 
   const restartGame = () => {
@@ -30,6 +39,11 @@ export default function App() {
     size.value = INITIAL_SIZE;
     setStartTime(Date.now());
     setElapsedTime(0);
+    if (confettiRef.current) {
+      // current is typed as never, so we have to mute typescript here
+      // @ts-ignore
+      confettiRef.current.stopConfetti();
+    }
   }
 
   useEffect(() => {
@@ -37,12 +51,12 @@ export default function App() {
       stopGame();
     }
   }, [clickCount]);
-  
+
+
   return (
     <>
       <BouncingCircle
         setClickCount={setClickCount}
-        clickCount={clickCount}
         isGameActive={isGameActive}
         speed={speed}
         size={size}
@@ -52,6 +66,7 @@ export default function App() {
         !isGameActive.value && clickCount >= CLICK_COUNT &&
         <GameOver elapsedTime={elapsedTime} restartGame={restartGame} />
       }
+      <Confetti ref={confettiRef} />
     </>
   );
 }
