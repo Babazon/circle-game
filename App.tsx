@@ -50,10 +50,7 @@ export default function App() {
     if (clickCount >= CLICK_COUNT) {
       stopGame();
     }
-  }, [clickCount]);
-
-  console.log(elapsedTime);
-  
+  }, [clickCount]);  
 
   return (
     <>
