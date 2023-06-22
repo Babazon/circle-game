@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Dimensions, Pressable } from 'react-native';
+import React from 'react';
+import { Dimensions, Pressable } from 'react-native';
 import Animated, {
-  useSharedValue,
+  SharedValue,
   useAnimatedStyle,
   useDerivedValue,
-  log,
-  SharedValue,
+  useSharedValue
 } from 'react-native-reanimated';
-import { INITIAL_SIZE, SIZE_REDUCTION, SPEED_INCREMENT } from '../App';
+import { INITIAL_SIZE, SIZE_REDUCTION, SPEED_INCREMENT, CLICK_COUNT } from './constants';
 
 const { width, height } = Dimensions.get('window');
 
@@ -17,11 +16,12 @@ interface BouncingCircleProps {
   clickCount: number;
   setClickCount: React.Dispatch<React.SetStateAction<number>>;
   isGameActive: SharedValue<boolean>;
-  speed:SharedValue<number>
-  size: SharedValue<number>
+  speed: SharedValue<number>;
+  size: SharedValue<number>;
+  stopGame: () => void;
 }
 
-const BouncingCircle:React.FC<BouncingCircleProps> = ({clickCount, setClickCount, isGameActive, speed, size}) => {
+const BouncingCircle: React.FC<BouncingCircleProps> = ({ clickCount, setClickCount, isGameActive, speed, size, stopGame }) => {
 
 
   const positionX = useSharedValue(width / 2 - INITIAL_SIZE / 2);
@@ -63,18 +63,10 @@ const BouncingCircle:React.FC<BouncingCircleProps> = ({clickCount, setClickCount
   });
 
   const onPress = () => {
-    // Reduce size and increase speed
     size.value *= SIZE_REDUCTION;
     speed.value *= SPEED_INCREMENT;
-    setClickCount(prev=>prev+1)
-
-      // If the circle has been clicked 5 times, stop the game
-      if (clickCount >= 3) {
-        isGameActive.value = false;
-      }
+    setClickCount(prevClickCount => prevClickCount + 1)
   };
-
-  console.log(clickCount)
 
   return (
     <Pressable onPress={onPress}>
