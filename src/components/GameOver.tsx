@@ -1,7 +1,7 @@
 // GameOver.tsx
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { GAME_OVER_TEXT, IT_TOOK_YOU_TEXT, RESTART_TEXT, SECONDS_TEXT } from '../constants';
+import { GAME_OVER_TEXT, IT_TOOK_YOU_TEXT, MILISECOND_MULTIPLIER, RESTART_TEXT, SECONDS_TEXT } from '../constants';
 
 interface GameOverProps {
     elapsedTime: number;
@@ -11,7 +11,7 @@ interface GameOverProps {
 const GameOver: React.FC<GameOverProps> = ({ elapsedTime, restartGame }) => (
     <View style={styles.container}>
         <Text style={styles.gameOverText}>{GAME_OVER_TEXT}</Text>
-        <Text style={styles.scoreText}> {IT_TOOK_YOU_TEXT} {elapsedTime / 100} {SECONDS_TEXT}</Text>
+        <Text style={styles.scoreText}> {IT_TOOK_YOU_TEXT} {elapsedTime / MILISECOND_MULTIPLIER} {SECONDS_TEXT}</Text>
         <Pressable onPress={restartGame}><Text style={styles.restartText}>{RESTART_TEXT}</Text></Pressable>
     </View>
 );

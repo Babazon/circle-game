@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dimensions, Pressable } from 'react-native';
 import Animated, {
   SharedValue,
@@ -6,9 +6,12 @@ import Animated, {
   useDerivedValue,
   useSharedValue
 } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+import { Audio } from 'expo-av';
 import { INITIAL_SIZE, SIZE_REDUCTION, SPEED_INCREMENT } from './constants';
 
 const { width, height } = Dimensions.get('window');
+const sound = new Audio.Sound();
 
 
 interface BouncingCircleProps {
@@ -26,6 +29,22 @@ const BouncingCircle: React.FC<BouncingCircleProps> = ({ setClickCount, isGameAc
   const positionY = useSharedValue(height / 2 - INITIAL_SIZE / 2);
   const directionX = useSharedValue(Math.random() > 0.5 ? 1 : -1);
   const directionY = useSharedValue(Math.random() > 0.5 ? 1 : -1);
+
+  useEffect(() => {
+    const loadSoundEffect = async () => {
+      try {
+        await sound.loadAsync(require('./assets/BounceSoundEffect.mp3'));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  
+    loadSoundEffect();
+  
+    return () => {
+      sound.unloadAsync();
+    };
+  }, []);
 
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -58,10 +77,18 @@ const BouncingCircle: React.FC<BouncingCircleProps> = ({ setClickCount, isGameAc
     }
   });
 
-  const onPress = () => {
+  const onPress = async () => {
     size.value *= SIZE_REDUCTION;
     speed.value *= SPEED_INCREMENT;
     setClickCount(prevClickCount => prevClickCount + 1)
+    Haptics.selectionAsync();
+
+    try {
+      await sound.setPositionAsync(0);
+      await sound.playAsync();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

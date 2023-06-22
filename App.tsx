@@ -1,7 +1,7 @@
 // App.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import Confetti from 'react-native-confetti';
-import { useSharedValue } from 'react-native-reanimated';
+import { log, useSharedValue } from 'react-native-reanimated';
 import BouncingCircle from './src/BouncingCircle';
 import GameOver from './src/components/GameOver';
 import {
@@ -47,11 +47,13 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (clickCount === CLICK_COUNT) {
+    if (clickCount >= CLICK_COUNT) {
       stopGame();
     }
   }, [clickCount]);
 
+  console.log(elapsedTime);
+  
 
   return (
     <>
