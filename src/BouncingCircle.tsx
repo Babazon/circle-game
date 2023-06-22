@@ -4,7 +4,8 @@ import Animated, {
   SharedValue,
   useAnimatedStyle,
   useDerivedValue,
-  useSharedValue
+  useSharedValue,
+  withSpring
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
@@ -24,7 +25,7 @@ interface BouncingCircleProps {
 
 const BouncingCircle: React.FC<BouncingCircleProps> = ({ setClickCount, isGameActive, speed, size, stopGame }) => {
 
-
+  const scale = useSharedValue(1);
   const positionX = useSharedValue(width / 2 - INITIAL_SIZE / 2);
   const positionY = useSharedValue(height / 2 - INITIAL_SIZE / 2);
   const directionX = useSharedValue(Math.random() > 0.5 ? 1 : -1);
@@ -58,6 +59,7 @@ const BouncingCircle: React.FC<BouncingCircleProps> = ({ setClickCount, isGameAc
       {
         translateY: positionY.value,
       },
+      { scale: scale.value },  
     ],
   }));
 
@@ -82,6 +84,13 @@ const BouncingCircle: React.FC<BouncingCircleProps> = ({ setClickCount, isGameAc
     speed.value *= SPEED_INCREMENT;
     setClickCount(prevClickCount => prevClickCount + 1)
     Haptics.selectionAsync();
+
+    scale.value = withSpring(1.3, {}, (isFinished) => {
+      if (isFinished) {
+        scale.value = withSpring(1);
+      }
+    });
+  
 
     try {
       await sound.setPositionAsync(0);
